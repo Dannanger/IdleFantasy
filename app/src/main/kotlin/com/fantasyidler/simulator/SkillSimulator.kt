@@ -396,6 +396,7 @@ object SkillSimulator {
     // ------------------------------------------------------------------
 
     private const val LAPS_PER_MINUTE = 2
+const val GLOBAL_SPEED = 4.0
 
     /**
      * Returns the duration of a session in milliseconds, applying the agility
@@ -416,7 +417,7 @@ object SkillSimulator {
         val minutes = (60.0 - maxReduction * fraction) * chronosMultiplier.coerceIn(0.5f, 1.0f)
         // Millisecond precision: rounding to whole minutes swallowed the 2% Chronos Spire
         // reduction entirely at many agility levels (issue #1486).
-        return (minutes * 60_000.0).roundToLong().coerceAtLeast(60_000L)
+        return (minutes / GLOBAL_SPEED * 60_000.0).roundToLong().coerceAtLeast(60_000L)
     }
 
     /**
@@ -427,8 +428,8 @@ object SkillSimulator {
      */
     fun elderSessionDurationMs(elderAgilityLevel: Int): Long {
         val fraction = (elderAgilityLevel - 1).coerceIn(0, 98) / 98.0
-        val minutes = 60.0 - 15.0 * fraction
-        return (minutes * 60_000.0).roundToLong().coerceAtLeast(45L * 60_000L)
+        val minutes = (60.0 - 15.0 * fraction).coerceAtLeast(45.0) / GLOBAL_SPEED
+        return (minutes * 60_000.0).roundToLong()
     }
 
     /**
